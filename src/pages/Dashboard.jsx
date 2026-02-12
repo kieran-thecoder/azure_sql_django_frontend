@@ -121,3 +121,17 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+const orders = [
+  {
+    id: 1001,
+    createdAt: "2026-02-12T10:30:00Z",
+    items: [1, 2, 3]
+  },
+  {
+    id: 1002,
+    createdAt: "2026-02-11T14:20:00Z",
+    items: [1]
+  }
+];
+
