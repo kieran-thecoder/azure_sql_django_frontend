@@ -1,67 +1,62 @@
 import axios from 'axios';
 
+/* ================================
+   MAIN BACKEND API
+================================ */
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'khantz-backend-ekf7hjafeaa5dzg7.southeastasia-01.azurewebsites.net/api',
-  // baseURL: 'http://127.0.0.1:8000/api', 
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    'https://khantz-backend-ekf7hjafeaa5dzg7.southeastasia-01.azurewebsites.net/api',
+
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-console.log('🔧 API Configuration:');
-console.log('  Main API URL:', api.defaults.baseURL);
-console.log('  VITE_API_URL:', import.meta.env.VITE_API_URL);
+/* Debug */
+console.log('API URL:', api.defaults.baseURL);
 
-// Add a response interceptor to handle errors globally if needed
+/* Error handler */
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
+  (res) => res,
+  (err) => {
+    console.error('API Error:', err);
+    return Promise.reject(err);
   }
 );
 
+/* ================================
+   SERVICES
+================================ */
 
 export const storeService = {
-  getAll: () => api.get('/stores/').then(res => res.data),
-  create: (data) => api.post('/stores/', data).then(res => res.data),
-  update: (id, data) => api.put(`/stores/${id}/`, data).then(res => res.data),
-  delete: (id) => api.delete(`/stores/${id}/`).then(res => res.data),
-  deleteAll: () => api.delete('/stores/deleteAll/').then(res => res.data),
+  getAll: () => api.get('/stores/').then((r) => r.data),
 };
 
 export const productService = {
-  getAll: () => api.get('/products/').then(res => res.data),
-  create: (data) => api.post('/products/', data).then(res => res.data),
-  update: (id, data) => api.put(`/products/${id}/`, data).then(res => res.data),
-  delete: (id) => api.delete(`/products/${id}/`).then(res => res.data),
-  deleteAll: () => api.delete('/products/deleteAll/').then(res => res.data),
+  getAll: () => api.get('/products/').then((r) => r.data),
 };
 
-
 export const userService = {
-  getAll: () => api.get('/users/').then(res => res.data),
-  getById: (id) => api.get(`/users/${id}/`).then(res => res.data),
-  create: (data) => api.post('/users/', data).then(res => res.data),
+  getAll: () => api.get('/users/').then((r) => r.data),
 };
 
 export const orderService = {
-  getAll: () => api.get('/orders/').then(res => res.data),
-  getById: (id) => api.get(`/orders/${id}/`).then(res => res.data),
-  create: (data) => api.post('/orders/', data).then(res => res.data),
-  update: (id, data) => api.patch(`/orders/${id}/`, data).then(res => res.data),
-  delete: (id) => api.delete(`/orders/${id}/`).then(res => res.data),
+  getAll: () => api.get('/orders/').then((r) => r.data),
 };
 
 export const reviewService = {
-  getAll: (productId) => api.get(`/reviews/?product_id=${productId || ''}`).then(res => res.data),
-  create: (data) => api.post('/reviews/', data).then(res => res.data),
-  update: (id, data) => api.put(`/reviews/${id}/`, data).then(res => res.data),
-  delete: (id) => api.delete(`/reviews/${id}/`).then(res => res.data),
+  getAll: (productId) =>
+    api.get(`/reviews/?product_id=${productId || ''}`).then((r) => r.data),
 };
 
-// Function App URL - Replace with your actual Azure Function App URL
-const FUNCTION_API_URL = 'khant-fliter-atbgeef8guf9dkeq.southeastasia-01.azurewebsites.net/api';
+/* ================================
+   AZURE FUNCTION
+================================ */
+
+const FUNCTION_API_URL =
+  'https://khant-fliter-atbgeef8guf9dkeq.southeastasia-01.azurewebsites.net/api';
 
 const functionApi = axios.create({
   baseURL: FUNCTION_API_URL,
@@ -70,28 +65,9 @@ const functionApi = axios.create({
   },
 });
 
-console.log('🔧 Function API Configuration:');
-console.log('  Function API URL:', functionApi.defaults.baseURL);
-
 export const contentFilterService = {
-  filterComment: (comment) => {
-    if (functionApi.defaults.baseURL.includes('<YOUR_FUNCTION_APP_NAME>')) {
-      console.error('❌ Please replace <YOUR_FUNCTION_APP_NAME> with your actual Function App name in api.js');
-      return Promise.reject(new Error('Function API URL not configured'));
-    }
-    return functionApi.post('/filter_comment', { comment }).then(res => res.data);
-  },
+  filterComment: (comment) =>
+    functionApi.post('/filter_comment', { comment }).then((r) => r.data),
 };
 
 export default api;
-
-
-export const getApiConfig = () => {
-  const baseURL = api.defaults.baseURL || '';
-  const isLocal = baseURL.includes('127.0.0.1') || baseURL.includes('localhost');
-  return {
-    isLocal,
-    name: isLocal ? 'Local API' : 'Azure API',
-    baseURL
-  };
-};
