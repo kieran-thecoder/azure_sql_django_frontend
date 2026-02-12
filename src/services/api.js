@@ -71,3 +71,20 @@ export const contentFilterService = {
 };
 
 export default api;
+// ===============================
+// API Environment Info (For Layout)
+// ===============================
+
+export const getApiConfig = () => {
+  const baseURL = api.defaults.baseURL || '';
+
+  const isLocal =
+    baseURL.includes('localhost') ||
+    baseURL.includes('127.0.0.1');
+
+  return {
+    isLocal,
+    name: isLocal ? 'Local API' : 'Azure API',
+    baseURL,
+  };
+};
